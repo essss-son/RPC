@@ -1,0 +1,34 @@
+
+
+
+
+device_num=0
+
+
+
+length=512
+
+outputs_path=/root/autodl-tmp/FT/attr2/gen/decoding/
+
+acc_log_file=acc_log_file_dec.jsonl
+acc_log_file_path=$outputs_path$acc_log_file
+ppl_log_file=ppl_log_file_dec.jsonl
+ppl_log_file_path=$outputs_path$ppl_log_file
+
+lambda_cs=60.0
+ppl_file=Air_topic_${lambda_cs}_${length}
+generated_text0=gpt2_medium_imdb_attr0_${lambda_cs}_${length}.txt
+generated_text1=gpt2_medium_imdb_attr1_${lambda_cs}_${length}.txt
+json_file=Air_topic_${lambda_cs}_${length}_insert_prefix.jsonl
+json_file_path=$outputs_path$json_file
+
+python evaluation.py --txt $outputs_path --attr0_txt $generated_text0 --attr1_txt $generated_text1 --ppl_log_file $ppl_log_file_path --gen_file $ppl_file
+python txt2json.py --gen_dir_name $outputs_path --attr0_txt $generated_text0 --attr1_txt $generated_text1 --json_file_name $json_file
+python eval_topic_acc_3.py --dataset_path $json_file_path --model_name_or_path "/root/autodl-tmp/model/air/best_topic_classifier" --device_num $device_num
+
+
+
+
+
+
+

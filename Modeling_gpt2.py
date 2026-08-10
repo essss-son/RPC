@@ -193,27 +193,25 @@ class Attention(nn.Module):
 
         if use_prefix:
             assert self.prefix_len is not None
-            prefix_keys_embedding = getattr(self, f"prefix_keys_embeddings_n{prefix_id}")
-            prefix_values_embedding = getattr(self, f"prefix_values_embeddings_n{prefix_id}")
-            prefix_mlp = getattr(self, f"prefix_mlp_n{prefix_id}") if self.prefix_mid_size else None
-
-            index = torch.tensor(range(self.prefix_len)).to(device)
-            prefix_keys_embeddings = prefix_keys_embedding(index).unsqueeze(0)
-            prefix_values_embeddings = prefix_values_embedding(index).unsqueeze(0)
+            if not 0 <= prefix_id <= 7:
+                raise Exception("wrong prefix_id")
+            index = torch.arange(self.prefix_len, device=device)
+            prefix_keys_embeddings = getattr(self, f"prefix_keys_embeddings_n{prefix_id}")(index).unsqueeze(0)
+            prefix_values_embeddings = getattr(self, f"prefix_values_embeddings_n{prefix_id}")(index).unsqueeze(0)
             w, h = prefix_keys_embeddings.shape[1:]
             prefix_keys_embeddings = prefix_keys_embeddings.expand(batch_size, w, h).contiguous()
             prefix_values_embeddings = prefix_values_embeddings.expand(batch_size, w, h).contiguous()
 
-            if prefix_mlp is not None:
-                prefix_keys_embeddings = prefix_mlp(prefix_keys_embeddings)
-                prefix_values_embeddings = prefix_mlp(prefix_values_embeddings)
+            if self.prefix_mid_size:
+                prefix_keys_embeddings = getattr(self, f"prefix_mlp_n{prefix_id}")(prefix_keys_embeddings)
+                prefix_values_embeddings = getattr(self, f"prefix_mlp_n{prefix_id}")(prefix_values_embeddings)
 
             prefix_keys_embeddings = self.split_heads(prefix_keys_embeddings, k=True)
             prefix_values_embeddings = self.split_heads(prefix_values_embeddings)
 
             key = torch.cat((prefix_keys_embeddings, key), dim=-1)
             value = torch.cat((prefix_values_embeddings, value), dim=-2)
-            if insert == True:
+            if insert:
                 for i in range(insert_count):
                     key = torch.cat((prefix_keys_embeddings, key), dim=-1)
                     value = torch.cat((prefix_values_embeddings, value), dim=-2)

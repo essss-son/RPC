@@ -15,9 +15,7 @@ def generate(args):
     # file = os.path.join(args.output_path, f"{args.task_mode}_output.json")
     # args.output_path = file
     for i in tqdm(range(args.epoch)):
-        _, _, insert_count_dict = agent.collect_trajectory_with_policy()
-        pos_insert_count = insert_count_dict['0']
-        neg_insert_count = insert_count_dict['1']
+        agent.collect_trajectory_with_policy()
 
 
 if __name__ == '__main__':

@@ -40,6 +40,7 @@ if __name__ == '__main__':
     model = policy(1024,2)
 
     text = "I love you"
-    action = model.get_action(text)
+    input_ids = torch.tensor([model.tokenizer.encode(text)]).long().to(model.device)
+    action = model.get_action(input_ids)
     print(action)
-    print(model.get_log_prob(text, action))
+    print(model.get_log_prob(input_ids, action))

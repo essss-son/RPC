@@ -192,98 +192,21 @@ class Attention(nn.Module):
             present = (None,)
 
         if use_prefix:
-            # we use six prefixes and each prefix_length is set to 20
             assert self.prefix_len is not None
-            if prefix_id == 0:
-                index = torch.tensor(range(self.prefix_len)).to(device)
-                prefix_keys_embeddings = self.prefix_keys_embeddings_n0(index).unsqueeze(0)
-                prefix_values_embeddings = self.prefix_values_embeddings_n0(index).unsqueeze(0)
-                w, h = prefix_keys_embeddings.shape[1:]
-                prefix_keys_embeddings = prefix_keys_embeddings.expand(batch_size, w, h).contiguous()
-                prefix_values_embeddings = prefix_values_embeddings.expand(batch_size, w, h).contiguous()
+            prefix_keys_embedding = getattr(self, f"prefix_keys_embeddings_n{prefix_id}")
+            prefix_values_embedding = getattr(self, f"prefix_values_embeddings_n{prefix_id}")
+            prefix_mlp = getattr(self, f"prefix_mlp_n{prefix_id}") if self.prefix_mid_size else None
 
-                if self.prefix_mid_size:
-                    prefix_keys_embeddings = self.prefix_mlp_n0(prefix_keys_embeddings)
-                    prefix_values_embeddings = self.prefix_mlp_n0(prefix_values_embeddings)
-            elif prefix_id == 1:
-                index = torch.tensor(range(self.prefix_len)).to(device)
-                prefix_keys_embeddings = self.prefix_keys_embeddings_n1(index).unsqueeze(0)
-                prefix_values_embeddings = self.prefix_values_embeddings_n1(index).unsqueeze(0)
-                w, h = prefix_keys_embeddings.shape[1:]
-                prefix_keys_embeddings = prefix_keys_embeddings.expand(batch_size, w, h).contiguous()
-                prefix_values_embeddings = prefix_values_embeddings.expand(batch_size, w, h).contiguous()
+            index = torch.tensor(range(self.prefix_len)).to(device)
+            prefix_keys_embeddings = prefix_keys_embedding(index).unsqueeze(0)
+            prefix_values_embeddings = prefix_values_embedding(index).unsqueeze(0)
+            w, h = prefix_keys_embeddings.shape[1:]
+            prefix_keys_embeddings = prefix_keys_embeddings.expand(batch_size, w, h).contiguous()
+            prefix_values_embeddings = prefix_values_embeddings.expand(batch_size, w, h).contiguous()
 
-                if self.prefix_mid_size:
-                    prefix_keys_embeddings = self.prefix_mlp_n1(prefix_keys_embeddings)
-                    prefix_values_embeddings = self.prefix_mlp_n1(prefix_values_embeddings)
-            elif prefix_id == 2:
-                index = torch.tensor(range(self.prefix_len)).to(device)
-                prefix_keys_embeddings = self.prefix_keys_embeddings_n2(index).unsqueeze(0)
-                prefix_values_embeddings = self.prefix_values_embeddings_n2(index).unsqueeze(0)
-                w, h = prefix_keys_embeddings.shape[1:]
-                prefix_keys_embeddings = prefix_keys_embeddings.expand(batch_size, w, h).contiguous()
-                prefix_values_embeddings = prefix_values_embeddings.expand(batch_size, w, h).contiguous()
-
-                if self.prefix_mid_size:
-                    prefix_keys_embeddings = self.prefix_mlp_n2(prefix_keys_embeddings)
-                    prefix_values_embeddings = self.prefix_mlp_n2(prefix_values_embeddings)
-            elif prefix_id == 3:
-                index = torch.tensor(range(self.prefix_len)).to(device)
-                prefix_keys_embeddings = self.prefix_keys_embeddings_n3(index).unsqueeze(0)
-                prefix_values_embeddings = self.prefix_values_embeddings_n3(index).unsqueeze(0)
-                w, h = prefix_keys_embeddings.shape[1:]
-                prefix_keys_embeddings = prefix_keys_embeddings.expand(batch_size, w, h).contiguous()
-                prefix_values_embeddings = prefix_values_embeddings.expand(batch_size, w, h).contiguous()
-
-                if self.prefix_mid_size:
-                    prefix_keys_embeddings = self.prefix_mlp_n3(prefix_keys_embeddings)
-                    prefix_values_embeddings = self.prefix_mlp_n3(prefix_values_embeddings)
-            elif prefix_id == 4:
-                index = torch.tensor(range(self.prefix_len)).to(device)
-                prefix_keys_embeddings = self.prefix_keys_embeddings_n4(index).unsqueeze(0)
-                prefix_values_embeddings = self.prefix_values_embeddings_n4(index).unsqueeze(0)
-                w, h = prefix_keys_embeddings.shape[1:]
-                prefix_keys_embeddings = prefix_keys_embeddings.expand(batch_size, w, h).contiguous()
-                prefix_values_embeddings = prefix_values_embeddings.expand(batch_size, w, h).contiguous()
-
-                if self.prefix_mid_size:
-                    prefix_keys_embeddings = self.prefix_mlp_n4(prefix_keys_embeddings)
-                    prefix_values_embeddings = self.prefix_mlp_n4(prefix_values_embeddings)
-            elif prefix_id == 5:
-                index = torch.tensor(range(self.prefix_len)).to(device)
-                prefix_keys_embeddings = self.prefix_keys_embeddings_n5(index).unsqueeze(0)
-                prefix_values_embeddings = self.prefix_values_embeddings_n5(index).unsqueeze(0)
-                w, h = prefix_keys_embeddings.shape[1:]
-                prefix_keys_embeddings = prefix_keys_embeddings.expand(batch_size, w, h).contiguous()
-                prefix_values_embeddings = prefix_values_embeddings.expand(batch_size, w, h).contiguous()
-
-                if self.prefix_mid_size:
-                    prefix_keys_embeddings = self.prefix_mlp_n5(prefix_keys_embeddings)
-                    prefix_values_embeddings = self.prefix_mlp_n5(prefix_values_embeddings)
-            elif prefix_id == 6:
-                index = torch.tensor(range(self.prefix_len)).to(device)
-                prefix_keys_embeddings = self.prefix_keys_embeddings_n6(index).unsqueeze(0)
-                prefix_values_embeddings = self.prefix_values_embeddings_n6(index).unsqueeze(0)
-                w, h = prefix_keys_embeddings.shape[1:]
-                prefix_keys_embeddings = prefix_keys_embeddings.expand(batch_size, w, h).contiguous()
-                prefix_values_embeddings = prefix_values_embeddings.expand(batch_size, w, h).contiguous()
-
-                if self.prefix_mid_size:
-                    prefix_keys_embeddings = self.prefix_mlp_n6(prefix_keys_embeddings)
-                    prefix_values_embeddings = self.prefix_mlp_n6(prefix_values_embeddings)
-            elif prefix_id == 7:
-                index = torch.tensor(range(self.prefix_len)).to(device)
-                prefix_keys_embeddings = self.prefix_keys_embeddings_n7(index).unsqueeze(0)
-                prefix_values_embeddings = self.prefix_values_embeddings_n7(index).unsqueeze(0)
-                w, h = prefix_keys_embeddings.shape[1:]
-                prefix_keys_embeddings = prefix_keys_embeddings.expand(batch_size, w, h).contiguous()
-                prefix_values_embeddings = prefix_values_embeddings.expand(batch_size, w, h).contiguous()
-
-                if self.prefix_mid_size:
-                    prefix_keys_embeddings = self.prefix_mlp_n7(prefix_keys_embeddings)
-                    prefix_values_embeddings = self.prefix_mlp_n7(prefix_values_embeddings)
-            else:
-                raise Exception("wrong prefix_id")
+            if prefix_mlp is not None:
+                prefix_keys_embeddings = prefix_mlp(prefix_keys_embeddings)
+                prefix_values_embeddings = prefix_mlp(prefix_values_embeddings)
 
             prefix_keys_embeddings = self.split_heads(prefix_keys_embeddings, k=True)
             prefix_values_embeddings = self.split_heads(prefix_values_embeddings)

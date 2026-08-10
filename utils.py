@@ -212,7 +212,7 @@ class Agent:
                 for item_i in self.att_type:
                     cond_logits[item_i] = None
                     for item_j in self.att_type:
-                        if cond_logits[item_i] == None:
+                        if cond_logits[item_i] is None:
                             if item_j == item_i:
                                 cond_logits[item_i] = att_dic[item_j]['logits_norm']
                             else:
@@ -364,7 +364,7 @@ class Agent:
                     for item_i in self.att_type:
                         cond_logits[item_i] = None
                         for item_j in self.att_type:
-                            if cond_logits[item_i] == None:
+                            if cond_logits[item_i] is None:
                                 if item_j == item_i:
                                     cond_logits[item_i] = att_dic[item_j]['logits_norm']
                                 else:

@@ -442,7 +442,6 @@ def sent_reward_cal(result,
                device,
                alpha=10.0, beta=0.1):
     # note 这里只考虑情感分类，主题需要其他合适的分类器
-    model_path = "/home/anke/DXZ/models/distilbert-base-uncased-finetuned-sst-2-english"
     pos_insert_text = insert_result['0']
     neg_insert_text = insert_result['1']
     pos_text = result['0']
